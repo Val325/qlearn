@@ -8,6 +8,7 @@
 #include <SDL/SDL_ttf.h>
 #include <stdio.h>
 #include "image.cpp"
+#include "world.cpp"
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
 
@@ -41,21 +42,23 @@ int main(void)
 		return EXIT_FAILURE;
 	}
     
-    std::random_device dev;
-    std::mt19937 rng(dev());
-    std::uniform_int_distribution<std::mt19937::result_type> ran(0,3);
+
 
     int sizeCell = 100;
     int xLenghtCells = SCREEN_WIDTH / sizeCell; 
     int yLenghtCells = SCREEN_HEIGHT / sizeCell;
+    
     std::cout << "-------- Debug --------" << std::endl;
     std::cout << "Size x len: " << xLenghtCells << std::endl;
     std::cout << "Size y len: " << yLenghtCells << std::endl; 
     
-    std::vector<ImageCell> allCells;
+    //std::vector<ImageCell> allCells;
     int sizeCells = xLenghtCells * yLenghtCells;
-    allCells.resize(sizeCells);
+    //allCells.resize(sizeCells);
     std::cout << "sizeCells draw: " << sizeCells << std::endl;
+    Enviroment world(win, ren, sizeCells);
+    world.SetCellSize(sizeCell);
+    /*
     ImageCell cellOpen(win, ren);
     cellOpen.loadTexture("resource/images/cellopen.bmp");
     cellOpen.setSize(sizeCell, sizeCell);
@@ -65,7 +68,7 @@ int main(void)
     for (int i = 0; i <= sizeCells; i++){
         allCells.push_back(cellOpen);
     }
-
+    */
     //cellopen load
     //
 	SDL_Surface* cellopen = SDL_LoadBMP("resource/images/cellopen.bmp");
@@ -94,10 +97,14 @@ int main(void)
     //Event handler
     SDL_Event e;
     
+    /*
     int x = 0;
     int y = 0;
-    
+    int positionHero = 0;
+    int lastPosition = sizeCells - 1; 
+    */
     //fill position
+    /*
     for (int i = 0; i < sizeCells; i++){
         allCells[i].setPosition(x * sizeCell,y * sizeCell);
         allCells[i].setWindow(win);
@@ -116,19 +123,20 @@ int main(void)
         }
         //std::cout << "random: " << ran(rng) << std::endl;
     }
-
+    */
+    world.GenerateCells(xLenghtCells, yLenghtCells);
     //game loop
     while( !quit ){
-
+        //allCells[positionHero].loadTexture("resource/images/cellhero.bmp");
+        //allCells[lastPosition].loadTexture("resource/images/celldestination.bmp");
         SDL_RenderClear(ren);
+        world.Render();
         //here SDL_RENDER_COPY
         //cellOpen.render();
-
+/*
         for (int i = 0; i < sizeCells; i++){
-            
-
             allCells[i].render();
-        }
+        }*/
 		SDL_RenderPresent(ren);
         
         //Handle events on queue
@@ -143,18 +151,16 @@ int main(void)
                                // ------------------------------------------
                     switch( e.key.keysym.sym ){
                         case SDLK_UP:
-
                             break;
                         case SDLK_DOWN:
-
                             break;
                         case SDLK_LEFT:
-
                             break;
                         case SDLK_RIGHT:
-
                             break;
                         case SDLK_r:
+                            world.GenerateCells(xLenghtCells, yLenghtCells);
+                            /*
                             for (int i = 0; i < sizeCells; i++){
                                 allCells[i].setPosition(x * sizeCell,y * sizeCell);
                                 allCells[i].setWindow(win);
@@ -170,9 +176,9 @@ int main(void)
                                 // y == 6
                                 if (y == yLenghtCells){
                                     y = 0;
-                                }
+                                }*/
                                 //std::cout << "random: " << ran(rng) << std::endl;
-                            }
+                            //}
                             break;
                         case SDLK_ESCAPE:
                             quit = true;

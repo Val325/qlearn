@@ -1,0 +1,3 @@
+/home/ghost/progects/sdlqlearn/clearn/CMakeFiles/qlearn.dir
+/home/ghost/progects/sdlqlearn/clearn/CMakeFiles/edit_cache.dir
+/home/ghost/progects/sdlqlearn/clearn/CMakeFiles/rebuild_cache.dir

@@ -1,11 +1,15 @@
-
 class ImageCell{
     private:
+        // coordinate grid
+        int xPos;
+        int yPos;
+
         SDL_Window* win;
         SDL_Renderer* ren;
 
         SDL_Surface* cell;
         SDL_Texture* texcell;
+        //coordinate image
         SDL_Rect cellrect;
 
         std::string pathTexture;
@@ -61,6 +65,16 @@ class ImageCell{
 		        //return EXIT_FAILURE;
 	        }
         }
+        void setPositionGrid(int x, int y){
+            xPos = x;
+            yPos = y;
+        }
+        int GetPositionGridX(){
+            return xPos;
+        }
+        int GetPositionGridY(){
+            return yPos;
+        }
         void setPosition(int x, int y){
             cellrect.x = x;
             cellrect.y = y;
@@ -75,7 +89,6 @@ class ImageCell{
         void render(){
             if (ren == NULL) std::cout << "ren null" << std::endl;
             if (texcell == NULL) std::cout << "tex null" << std::endl;
-            //if (cellrect == NULL) std::cout << "cellrect null" << std::endl;
             SDL_RenderCopy(ren, texcell, NULL, &cellrect);
         }
 };
