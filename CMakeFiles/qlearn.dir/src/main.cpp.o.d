@@ -228,4 +228,5 @@ CMakeFiles/qlearn.dir/src/main.cpp.o: \
   /home/ghost/progects/sdlqlearn/clearn/inc/SDL/SDL_image.h \
   /home/ghost/progects/sdlqlearn/clearn/inc/SDL/SDL_ttf.h \
   /home/ghost/progects/sdlqlearn/clearn/src/image.cpp \
-  /home/ghost/progects/sdlqlearn/clearn/src/world.cpp
+  /home/ghost/progects/sdlqlearn/clearn/src/world.cpp \
+  /home/ghost/progects/sdlqlearn/clearn/src/agent.cpp

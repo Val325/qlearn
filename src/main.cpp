@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include "image.cpp"
 #include "world.cpp"
+#include "agent.cpp"
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
 
@@ -16,11 +17,9 @@ int main(void)
 {
     srand(time(NULL));
  
-    //Initialize SDL_ttf
     if(TTF_Init() == -1)
     {
         printf( "SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError() );
-                    //success = false;
     }
 
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -57,6 +56,9 @@ int main(void)
     //allCells.resize(sizeCells);
     std::cout << "sizeCells draw: " << sizeCells << std::endl;
     Enviroment world(win, ren, sizeCells);
+    agentAI player(0,0);
+
+
     world.SetCellSize(sizeCell);
     /*
     ImageCell cellOpen(win, ren);
@@ -93,6 +95,7 @@ int main(void)
 
     //Main loop flag
     bool quit = false;
+    bool isStartGame = false;
     //bool isLoad = false;
     //Event handler
     SDL_Event e;
@@ -130,8 +133,20 @@ int main(void)
         //allCells[positionHero].loadTexture("resource/images/cellhero.bmp");
         //allCells[lastPosition].loadTexture("resource/images/celldestination.bmp");
         SDL_RenderClear(ren);
+
+        if (!isStartGame){
+            player.setPosition(0, 0);
+        }
+        player.setConstraint(xLenghtCells, yLenghtCells);
+        player.setWindow(win);
+        player.setRender(ren);
+        player.loadTexture("resource/images/cellhero.bmp");
+        player.setSize(sizeCell,sizeCell);
+
         world.Render();
+        player.Render();
         //here SDL_RENDER_COPY
+
         //cellOpen.render();
 /*
         for (int i = 0; i < sizeCells; i++){
@@ -147,16 +162,21 @@ int main(void)
             }
             //If a key was pressed
               if( e.type == SDL_KEYDOWN ){
-
+                    isStartGame = true;
                                // ------------------------------------------
                     switch( e.key.keysym.sym ){
                         case SDLK_UP:
+
+                            player.MoveUp();
                             break;
                         case SDLK_DOWN:
+                            player.MoveDown();
                             break;
                         case SDLK_LEFT:
+                            player.MoveLeft();
                             break;
                         case SDLK_RIGHT:
+                            player.MoveRight();
                             break;
                         case SDLK_r:
                             world.GenerateCells(xLenghtCells, yLenghtCells);
