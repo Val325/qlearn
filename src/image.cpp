@@ -14,6 +14,8 @@ class ImageCell{
 
         std::string pathTexture;
         std::string type;
+        
+        bool IsWall;
 
         void loadSurface(std::string pathSurf){
             //pathSurface = pathSurf;
@@ -34,6 +36,8 @@ class ImageCell{
             cellrect.y = 0;
             cellrect.w = 0;
             cellrect.h = 0;
+
+            IsWall = false;
         }
         ImageCell(SDL_Window* window, SDL_Renderer* render){
             win = window;
@@ -42,6 +46,8 @@ class ImageCell{
             cellrect.y = 0;
             cellrect.w = 0;
             cellrect.h = 0;
+
+            IsWall = false;
         }
         void setType(std::string typeObj){
             type = typeObj; 
@@ -51,6 +57,12 @@ class ImageCell{
         }
         void setRender(SDL_Renderer* render){
             ren = render;
+        }
+        void setCollide(bool isSet){
+            IsWall = isSet;  
+        }
+        bool getCollide(){
+            return IsWall;
         }
         void loadTexture(std::string pathTex){
             loadSurface(pathTex); 
@@ -79,7 +91,7 @@ class ImageCell{
             cellrect.x = x;
             cellrect.y = y;
         }
-        SDL_Rect getPosition(){
+        SDL_Rect getRect(){
             return cellrect; 
         }
         void setSize(int width, int height){
@@ -90,5 +102,44 @@ class ImageCell{
             if (ren == NULL) std::cout << "ren null" << std::endl;
             if (texcell == NULL) std::cout << "tex null" << std::endl;
             SDL_RenderCopy(ren, texcell, NULL, &cellrect);
+        }
+        bool checkCollision(SDL_Rect player_rect){
+            //The sides of the rectangles
+            int leftA, leftB;
+            int rightA, rightB;
+            int topA, topB;
+            int bottomA, bottomB;
+
+            //Calculate the sides of rect A
+            leftA = player_rect.x;
+            rightA = player_rect.x + player_rect.w;
+            topA = player_rect.y;
+            bottomA = player_rect.y + player_rect.h;
+
+            //Calculate the sides of rect B
+            leftB = cellrect.x;
+            rightB = cellrect.x + cellrect.w;
+            topB = cellrect.y;
+            bottomB = cellrect.y + cellrect.h;
+            
+            //If any of the sides from A are outside of B
+            if( bottomA <= topB ){
+                return false;
+            }
+
+            if( topA >= bottomB ){
+                return false;
+            }
+
+            if( rightA <= leftB ){
+                return false;
+            }
+
+            if( leftA >= rightB ){
+                return false;
+            }
+
+            //If none of the sides from A are outside B
+            return true;
         }
 };

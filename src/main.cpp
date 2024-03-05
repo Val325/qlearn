@@ -7,9 +7,11 @@
 #include <SDL/SDL_image.h>
 #include <SDL/SDL_ttf.h>
 #include <stdio.h>
+
 #include "image.cpp"
 #include "world.cpp"
 #include "agent.cpp"
+
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
 
@@ -50,29 +52,14 @@ int main(void)
     std::cout << "-------- Debug --------" << std::endl;
     std::cout << "Size x len: " << xLenghtCells << std::endl;
     std::cout << "Size y len: " << yLenghtCells << std::endl; 
-    
-    //std::vector<ImageCell> allCells;
+
     int sizeCells = xLenghtCells * yLenghtCells;
-    //allCells.resize(sizeCells);
     std::cout << "sizeCells draw: " << sizeCells << std::endl;
     Enviroment world(win, ren, sizeCells);
     agentAI player(0,0);
 
-
     world.SetCellSize(sizeCell);
-    /*
-    ImageCell cellOpen(win, ren);
-    cellOpen.loadTexture("resource/images/cellopen.bmp");
-    cellOpen.setSize(sizeCell, sizeCell);
-    cellOpen.setWindow(win);
-    cellOpen.setRender(ren);
 
-    for (int i = 0; i <= sizeCells; i++){
-        allCells.push_back(cellOpen);
-    }
-    */
-    //cellopen load
-    //
 	SDL_Surface* cellopen = SDL_LoadBMP("resource/images/cellopen.bmp");
 	if (cellopen == NULL) {
 		fprintf(stderr, "SDL_LoadBMP Error: %s\n", SDL_GetError());
@@ -96,42 +83,15 @@ int main(void)
     //Main loop flag
     bool quit = false;
     bool isStartGame = false;
+    bool isGame = false;
+    bool isStartQlearning = false;
     //bool isLoad = false;
     //Event handler
     SDL_Event e;
-    
-    /*
-    int x = 0;
-    int y = 0;
-    int positionHero = 0;
-    int lastPosition = sizeCells - 1; 
-    */
-    //fill position
-    /*
-    for (int i = 0; i < sizeCells; i++){
-        allCells[i].setPosition(x * sizeCell,y * sizeCell);
-        allCells[i].setWindow(win);
-        allCells[i].setRender(ren);
-        allCells[i].setSize(sizeCell, sizeCell);
-        (ran(rng) == 0) ? allCells[i].loadTexture("resource/images/cellobstacle.bmp"): allCells[i].loadTexture("resource/images/cellopen.bmp"); 
-        x++;
-        // x = 8
-        if (x == xLenghtCells){
-            x = 0;
-            y++;
-        }
-        // y == 6
-        if (y == yLenghtCells){
-            y = 0;
-        }
-        //std::cout << "random: " << ran(rng) << std::endl;
-    }
-    */
     world.GenerateCells(xLenghtCells, yLenghtCells);
     //game loop
     while( !quit ){
-        //allCells[positionHero].loadTexture("resource/images/cellhero.bmp");
-        //allCells[lastPosition].loadTexture("resource/images/celldestination.bmp");
+
         SDL_RenderClear(ren);
 
         if (!isStartGame){
@@ -142,16 +102,19 @@ int main(void)
         player.setRender(ren);
         player.loadTexture("resource/images/cellhero.bmp");
         player.setSize(sizeCell,sizeCell);
-
+        if (isStartQlearning){
+            player.RandomDirectionMove(world);
+        }
+        std::vector<ImageCell> CellsAll = world.getCells();
+        ImageCell cellInsidePlayer;
+        ImageCell cellNearbyPlayer;
+        //SDL_Rect playerRect = player.getPosition();
         world.Render();
         player.Render();
         //here SDL_RENDER_COPY
 
         //cellOpen.render();
-/*
-        for (int i = 0; i < sizeCells; i++){
-            allCells[i].render();
-        }*/
+
 		SDL_RenderPresent(ren);
         
         //Handle events on queue
@@ -163,42 +126,69 @@ int main(void)
             //If a key was pressed
               if( e.type == SDL_KEYDOWN ){
                     isStartGame = true;
-                               // ------------------------------------------
                     switch( e.key.keysym.sym ){
                         case SDLK_UP:
-
-                            player.MoveUp();
+                            if ((player.getYposition() - 1) >= 0){
+                                cellNearbyPlayer = world.getCellPosition(player.getXposition(), player.getYposition() - 1);
+                            }
+                            if (!cellNearbyPlayer.getCollide()){ 
+                                cellInsidePlayer = world.getCellPosition(player.getXposition(), player.getYposition());
+                                //std::cout << "x: " << cellInsidePlayer.GetPositionGridX() << " y: " << cellInsidePlayer.GetPositionGridY() << std::endl;                            
+                                if (isGame) player.MoveUp();
+                            }
                             break;
                         case SDLK_DOWN:
-                            player.MoveDown();
+                            if ((player.getYposition() + 1) >= yLenghtCells){
+                                break;
+                            }
+                            cellNearbyPlayer = world.getCellPosition(player.getXposition(), player.getYposition() + 1);
+                            if (!cellNearbyPlayer.getCollide()){                                
+                                cellInsidePlayer = world.getCellPosition(player.getXposition(), player.getYposition());
+                                //std::cout << "x: " << cellInsidePlayer.GetPositionGridX() << " y: " << cellInsidePlayer.GetPositionGridY() << std::endl;
+                                if (isGame) player.MoveDown();
+                            }
                             break;
                         case SDLK_LEFT:
-                            player.MoveLeft();
+                            //left cell
+                            /*
+                            std::cout << "LEFT" << std::endl;                            
+                            std::cout << "x: " << player.getXposition() << std::endl;
+                            std::cout << "New x: " << player.getXposition() - 1 << std::endl;
+                            std::cout << "xLenghtCells: " << xLenghtCells << std::endl;
+                            */
+                            if ((player.getXposition() - 1) == -1){
+                                break;
+                            } 
+                            cellNearbyPlayer = world.getCellPosition(player.getXposition() - 1, player.getYposition());
+                            if (!cellNearbyPlayer.getCollide()){
+                                cellInsidePlayer = world.getCellPosition(player.getXposition(), player.getYposition());
+                                //std::cout << "x: " << cellInsidePlayer.GetPositionGridX() << " y: " << cellInsidePlayer.GetPositionGridY() << std::endl; 
+                                if (isGame) player.MoveLeft();
+                            }
                             break;
                         case SDLK_RIGHT:
-                            player.MoveRight();
+                            //right cell
+                            /*
+                            std::cout << "RIGHT" << std::endl;                            
+                            std::cout << "X: " << player.getXposition() << std::endl;
+                            std::cout << "New X: " << player.getXposition() + 1 << std::endl;
+                            std::cout << "XLenghtCells: " << xLenghtCells << std::endl;
+                            */
+                            if ((player.getXposition() + 1) >= xLenghtCells){
+                                break;
+                            } 
+                            cellNearbyPlayer = world.getCellPosition(player.getXposition() + 1, player.getYposition());
+                            if (!cellNearbyPlayer.getCollide()){
+                                cellInsidePlayer = world.getCellPosition(player.getXposition(), player.getYposition());
+                                //std::cout << "x: " << cellInsidePlayer.GetPositionGridX() << " y: " << cellInsidePlayer.GetPositionGridY() << std::endl;
+                                if (isGame) player.MoveRight();
+                            }
                             break;
                         case SDLK_r:
                             world.GenerateCells(xLenghtCells, yLenghtCells);
-                            /*
-                            for (int i = 0; i < sizeCells; i++){
-                                allCells[i].setPosition(x * sizeCell,y * sizeCell);
-                                allCells[i].setWindow(win);
-                                allCells[i].setRender(ren);
-                                allCells[i].setSize(sizeCell, sizeCell);
-                                (ran(rng) == 0) ? allCells[i].loadTexture("resource/images/cellobstacle.bmp"): allCells[i].loadTexture("resource/images/cellopen.bmp"); 
-                                x++;
-                                // x = 8
-                                if (x == xLenghtCells){
-                                    x = 0;
-                                    y++;
-                                }
-                                // y == 6
-                                if (y == yLenghtCells){
-                                    y = 0;
-                                }*/
-                                //std::cout << "random: " << ran(rng) << std::endl;
-                            //}
+                            break;
+                        case SDLK_SPACE:
+                            isStartQlearning = true; 
                             break;
                         case SDLK_ESCAPE:
                             quit = true;

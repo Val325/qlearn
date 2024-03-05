@@ -103,10 +103,95 @@ class agentAI{
                 AgentRect.x = x * moveSizeCell;
             }
         }
+        void RandomDirectionMove(Enviroment universe){
+            ImageCell cellNearbyPlayer;
+            std::random_device dev;
+            std::mt19937 rng(dev());
+            std::uniform_int_distribution<std::mt19937::result_type> ran(0,3);
+        
+            /////////////////////////////////////////////////////////////////////////////////////////////// 
+            // Up
+            ///////////////////////////////////////////////////////////////////////////////////////////////
+            if ((getYposition() - 1) >= 0){
+                cellNearbyPlayer = universe.getCellPosition(getXposition(), getYposition() - 1);
+            }
+            if (!cellNearbyPlayer.getCollide()){ 
+                if (ran(rng) == 0) MoveUp();
+            }
+            /////////////////////////////////////////////////////////////////////////////////////////////// 
+            // Down
+            ///////////////////////////////////////////////////////////////////////////////////////////////
+            if ((getYposition() + 1) < ySizeCells){
+                cellNearbyPlayer = universe.getCellPosition(getXposition(), getYposition() + 1);
+            }
+            if (!cellNearbyPlayer.getCollide()){                                
+                if (ran(rng) == 1) MoveDown();
+            }
+            /////////////////////////////////////////////////////////////////////////////////////////////// 
+            // Right
+            ///////////////////////////////////////////////////////////////////////////////////////////////
+
+            if ((getXposition() + 1) < xSizeCells){ 
+                cellNearbyPlayer = universe.getCellPosition(getXposition() + 1, getYposition());
+            }
+            if (!cellNearbyPlayer.getCollide()){
+                if (ran(rng) == 2) MoveRight();
+            }
+            /////////////////////////////////////////////////////////////////////////////////////////////// 
+            // Left
+            ///////////////////////////////////////////////////////////////////////////////////////////////
+            if ((getXposition() - 1) == -1){
+                cellNearbyPlayer = universe.getCellPosition(getXposition(), getYposition());
+            }else{
+                cellNearbyPlayer = universe.getCellPosition(getXposition() - 1, getYposition());
+            }
+            if (!cellNearbyPlayer.getCollide()){
+                if (ran(rng) == 3) MoveLeft();
+            }
+        }
         void Render(){
             if (ren == NULL) std::cout << "ren agent null" << std::endl;
             if (textureAgent == NULL) std::cout << "tex agent null" << std::endl;
             //std::cout << "x: " << x << "y: " << y << "w: " << x << "h: " << std::endl;
             SDL_RenderCopy(ren, textureAgent, NULL, &AgentRect);
+        }
+        bool checkCollision(SDL_Rect player_rect){
+            //The sides of the rectangles
+            int leftA, leftB;
+            int rightA, rightB;
+            int topA, topB;
+            int bottomA, bottomB;
+
+            //Calculate the sides of rect A
+            leftA = player_rect.x;
+            rightA = player_rect.x + player_rect.w;
+            topA = player_rect.y;
+            bottomA = player_rect.y + player_rect.h;
+
+            //Calculate the sides of rect B
+            leftB = AgentRect.x;
+            rightB = AgentRect.x + AgentRect.w;
+            topB = AgentRect.y;
+            bottomB = AgentRect.y + AgentRect.h;
+            
+            //If any of the sides from A are outside of B
+            if( bottomA <= topB ){
+                return false;
+            }
+
+            if( topA >= bottomB ){
+                return false;
+            }
+
+            if( rightA <= leftB ){
+                return false;
+            }
+
+            if( leftA >= rightB ){
+                return false;
+            }
+
+            //If none of the sides from A are outside B
+            return true;
         }
 };

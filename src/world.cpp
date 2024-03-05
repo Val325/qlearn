@@ -38,7 +38,10 @@ class Enviroment{
                 Cells[i].setRender(ren);
                 Cells[i].setPositionGrid(x, y);
                 Cells[i].setSize(sizeCell, sizeCell);
-                (ran(rng) == 0) ? Cells[i].loadTexture("resource/images/cellobstacle.bmp"): Cells[i].loadTexture("resource/images/cellopen.bmp"); 
+
+                (ran(rng) == 0) ? Cells[i].setCollide(true): Cells[i].setCollide(false);
+                (Cells[i].getCollide() == true) ? Cells[i].loadTexture("resource/images/cellobstacle.bmp"): Cells[i].loadTexture("resource/images/cellopen.bmp");
+                
                 x++;
                 // x = 8
                 if (x == xsize){
@@ -51,6 +54,20 @@ class Enviroment{
                 }
                 //std::cout << "random: " << ran(rng) << std::endl;
             }
+        }
+        ImageCell getCellNum(int num){
+            return Cells[num]; 
+        }
+        ImageCell getCellPosition(int numGridX, int numGridY){
+            for (int i = 0; i < sizeCells; i++){
+                if (Cells[i].GetPositionGridX() == numGridX && 
+                    Cells[i].GetPositionGridY() == numGridY){
+                    return Cells[i]; 
+                }
+            }
+        }
+        std::vector<ImageCell> getCells(){
+            return Cells; 
         }
         void Render(){
             for (int i = 0; i < sizeCells; i++){
