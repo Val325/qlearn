@@ -6,6 +6,8 @@ class Enviroment{
         int sizeCells;
         int sizeCell;
     public:
+        Enviroment(){
+        }
         Enviroment(SDL_Window* window, SDL_Renderer* render, int sizeAllCells){
             win = window;
             ren = render;

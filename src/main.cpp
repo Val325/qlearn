@@ -7,11 +7,12 @@
 #include <SDL/SDL_image.h>
 #include <SDL/SDL_ttf.h>
 #include <stdio.h>
+#include <bits/stdc++.h>
 
 #include "image.cpp"
 #include "world.cpp"
 #include "agent.cpp"
-
+#include "qlearn.cpp"
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
 
@@ -57,9 +58,9 @@ int main(void)
     std::cout << "sizeCells draw: " << sizeCells << std::endl;
     Enviroment world(win, ren, sizeCells);
     agentAI player(0,0);
-
+    agentAI endpoint(0,0);
     world.SetCellSize(sizeCell);
-
+    qlearning dataLearn(world, player);
 	SDL_Surface* cellopen = SDL_LoadBMP("resource/images/cellopen.bmp");
 	if (cellopen == NULL) {
 		fprintf(stderr, "SDL_LoadBMP Error: %s\n", SDL_GetError());
@@ -102,6 +103,18 @@ int main(void)
         player.setRender(ren);
         player.loadTexture("resource/images/cellhero.bmp");
         player.setSize(sizeCell,sizeCell);
+        
+        endpoint.setPosition(700, 500);
+        endpoint.setConstraint(xLenghtCells, yLenghtCells);
+        endpoint.setWindow(win);
+        endpoint.setRender(ren);
+        endpoint.loadTexture("resource/images/celldestination.bmp");
+        endpoint.setSize(sizeCell,sizeCell);   
+        
+        if (player.checkCollision(endpoint.getPosition())){
+            std::cout << "get goal" << std::endl;
+        }
+
         if (isStartQlearning){
             player.RandomDirectionMove(world);
         }
@@ -110,6 +123,7 @@ int main(void)
         ImageCell cellNearbyPlayer;
         //SDL_Rect playerRect = player.getPosition();
         world.Render();
+        endpoint.Render();
         player.Render();
         //here SDL_RENDER_COPY
 
@@ -138,6 +152,12 @@ int main(void)
                             }
                             break;
                         case SDLK_DOWN:
+                            /*
+                            std::cout << "DOWN" << std::endl;                            
+                            std::cout << "y: " << player.getYposition() << std::endl;
+                            std::cout << "New y: " << player.getYposition() + 1 << std::endl;
+                            std::cout << "yLenghtCells: " << yLenghtCells << std::endl;
+                            */
                             if ((player.getYposition() + 1) >= yLenghtCells){
                                 break;
                             }

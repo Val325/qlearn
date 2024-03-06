@@ -1,3 +1,10 @@
+struct Reward{
+    int x;
+    int y;
+    float reward;
+    bool done;
+};
+
 class agentAI{
     private:
         int moveSizeCell;
@@ -30,6 +37,11 @@ class agentAI{
 	        }
         }
     public:
+        agentAI(){
+            moveSizeCell = 100;
+            x = 0;
+            y = 0;
+        }
         agentAI(int xpos, int ypos){
             moveSizeCell = 100;
             x = xpos;
@@ -108,7 +120,7 @@ class agentAI{
             std::random_device dev;
             std::mt19937 rng(dev());
             std::uniform_int_distribution<std::mt19937::result_type> ran(0,3);
-        
+            Reward DataReward;
             /////////////////////////////////////////////////////////////////////////////////////////////// 
             // Up
             ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -117,6 +129,7 @@ class agentAI{
             }
             if (!cellNearbyPlayer.getCollide()){ 
                 if (ran(rng) == 0) MoveUp();
+                
             }
             /////////////////////////////////////////////////////////////////////////////////////////////// 
             // Down
@@ -130,7 +143,6 @@ class agentAI{
             /////////////////////////////////////////////////////////////////////////////////////////////// 
             // Right
             ///////////////////////////////////////////////////////////////////////////////////////////////
-
             if ((getXposition() + 1) < xSizeCells){ 
                 cellNearbyPlayer = universe.getCellPosition(getXposition() + 1, getYposition());
             }
@@ -147,6 +159,62 @@ class agentAI{
             }
             if (!cellNearbyPlayer.getCollide()){
                 if (ran(rng) == 3) MoveLeft();
+            }
+        }
+        int GetRandomDirectionMove(Enviroment universe){
+            ImageCell cellNearbyPlayer;
+            std::random_device dev;
+            std::mt19937 rng(dev());
+            std::uniform_int_distribution<std::mt19937::result_type> ran(0,3);
+            /////////////////////////////////////////////////////////////////////////////////////////////// 
+            // Up
+            ///////////////////////////////////////////////////////////////////////////////////////////////
+            if ((getYposition() - 1) >= 0){
+                cellNearbyPlayer = universe.getCellPosition(getXposition(), getYposition() - 1);
+            }
+            if (!cellNearbyPlayer.getCollide()){ 
+                if (ran(rng) == 0){
+                    MoveUp();
+                    return 0; 
+                }
+            }
+            /////////////////////////////////////////////////////////////////////////////////////////////// 
+            // Down
+            ///////////////////////////////////////////////////////////////////////////////////////////////
+            if ((getYposition() + 1) < ySizeCells){
+                cellNearbyPlayer = universe.getCellPosition(getXposition(), getYposition() + 1);
+            }
+            if (!cellNearbyPlayer.getCollide()){                                
+                if (ran(rng) == 1){              
+                    MoveDown();
+                    return 1; 
+                }
+            }
+            /////////////////////////////////////////////////////////////////////////////////////////////// 
+            // Right
+            ///////////////////////////////////////////////////////////////////////////////////////////////
+            if ((getXposition() + 1) < xSizeCells){ 
+                cellNearbyPlayer = universe.getCellPosition(getXposition() + 1, getYposition());
+            }
+            if (!cellNearbyPlayer.getCollide()){
+                if (ran(rng) == 2){
+                    MoveRight();
+                    return 2; 
+                }
+            }
+            /////////////////////////////////////////////////////////////////////////////////////////////// 
+            // Left
+            ///////////////////////////////////////////////////////////////////////////////////////////////
+            if ((getXposition() - 1) == -1){
+                cellNearbyPlayer = universe.getCellPosition(getXposition(), getYposition());
+            }else{
+                cellNearbyPlayer = universe.getCellPosition(getXposition() - 1, getYposition());
+            }
+            if (!cellNearbyPlayer.getCollide()){
+                if (ran(rng) == 3){
+                    MoveLeft();
+                    return 3; 
+                }
             }
         }
         void Render(){
