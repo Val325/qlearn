@@ -297,6 +297,7 @@ CMakeFiles/qlearn.dir/src/main.cpp.o: src/main.cpp \
   inc/SDL/close_code.h \
   src/agent.cpp \
   src/image.cpp \
+  src/include/headers.hpp \
   src/qlearn.cpp \
   src/world.cpp \
   /usr/include/alloca.h \
@@ -651,13 +652,15 @@ CMakeFiles/qlearn.dir/src/main.cpp.o: src/main.cpp \
 
 /usr/include/asm-generic/errno-base.h:
 
+/usr/include/bits/timesize.h:
+
+src/qlearn.cpp:
+
 /usr/include/bits/byteswap.h:
 
 src/world.cpp:
 
-/usr/include/bits/timesize.h:
-
-src/qlearn.cpp:
+src/include/headers.hpp:
 
 inc/SDL/begin_code.h:
 

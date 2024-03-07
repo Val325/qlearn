@@ -1,9 +1,4 @@
-struct Reward{
-    int x;
-    int y;
-    float reward;
-    bool done;
-};
+
 
 class agentAI{
     private:
@@ -26,6 +21,9 @@ class agentAI{
 
         std::string pathTexture;
         
+        bool isGoalEnd;
+        int xGoal;
+        int yGoal;
         void loadSurface(std::string pathSurf){
             agentSurface = SDL_LoadBMP(pathSurf.c_str());
 
@@ -70,6 +68,16 @@ class agentAI{
         }
         int getYposition(){
             return y;
+        }
+        void setGoal(int xpos, int ypos){
+            xGoal = xpos;
+            yGoal = ypos;
+        }
+        void GetGoal(){
+            isGoalEnd = true;
+        }
+        bool isGetGoal(){
+            return isGoalEnd; 
         }
         void setConstraint(int xconstr, int yconstr){
             xSizeCells = xconstr;
@@ -216,6 +224,117 @@ class agentAI{
                     return 3; 
                 }
             }
+        }
+        Reward GetRewardRandomDirectionMove(Enviroment universe){
+            ImageCell cellNearbyPlayer;
+            std::random_device dev;
+            std::mt19937 rng(dev());
+            std::uniform_int_distribution<std::mt19937::result_type> ran(0,3);
+            Reward rewardData;
+            /////////////////////////////////////////////////////////////////////////////////////////////// 
+            // Up
+            ///////////////////////////////////////////////////////////////////////////////////////////////
+            if ((getYposition() - 1) >= 0){
+                cellNearbyPlayer = universe.getCellPosition(getXposition(), getYposition() - 1);
+            }
+            if (!cellNearbyPlayer.getCollide()){ 
+                if (ran(rng) == 0){
+                    MoveUp();
+                    rewardData.x = getXposition();
+                    rewardData.y = getYposition() - 1;
+                    if (getYposition() - 1 == -1) rewardData.y = getYposition();
+                    rewardData.reward = -0.01;
+                    rewardData.done = false;
+                    std::cout << "Move up" << std::endl;
+                    std::cout << "x: " << rewardData.x << std::endl;
+                    std::cout << "y: " << rewardData.y << std::endl;
+                    std::cout << "reward: " << rewardData.reward << std::endl;
+                    return rewardData; 
+                }
+            }
+            /////////////////////////////////////////////////////////////////////////////////////////////// 
+            // Down
+            ///////////////////////////////////////////////////////////////////////////////////////////////
+            if ((getYposition() + 1) < ySizeCells){
+                cellNearbyPlayer = universe.getCellPosition(getXposition(), getYposition() + 1);
+            }
+            if (!cellNearbyPlayer.getCollide()){                                
+                if (ran(rng) == 1){              
+                    MoveDown();
+                    rewardData.x = getXposition();
+                    rewardData.y = getYposition() + 1;
+                    rewardData.reward = -0.01;
+                    rewardData.done = false;
+                    std::cout << "Move down" << std::endl;
+                    std::cout << "x: " << rewardData.x << std::endl;
+                    std::cout << "y: " << rewardData.y << std::endl;
+                    std::cout << "reward: " << rewardData.reward << std::endl;
+                    return rewardData; 
+                }
+            }
+            /////////////////////////////////////////////////////////////////////////////////////////////// 
+            // Right
+            ///////////////////////////////////////////////////////////////////////////////////////////////
+            if ((getXposition() + 1) < xSizeCells){ 
+                cellNearbyPlayer = universe.getCellPosition(getXposition() + 1, getYposition());
+            }
+            if (!cellNearbyPlayer.getCollide()){
+                if (ran(rng) == 2){
+                    MoveRight();
+                    rewardData.x = getXposition() + 1;
+                    rewardData.y = getYposition();
+                    rewardData.reward = -0.01;
+                    rewardData.done = false;
+                    std::cout << "Move right" << std::endl;
+                    std::cout << "x: " << rewardData.x << std::endl;
+                    std::cout << "y: " << rewardData.y << std::endl;
+                    std::cout << "reward: " << rewardData.reward << std::endl;
+                    return rewardData; 
+                }
+            }
+            /////////////////////////////////////////////////////////////////////////////////////////////// 
+            // Left
+            ///////////////////////////////////////////////////////////////////////////////////////////////
+            if ((getXposition() - 1) == -1){
+                cellNearbyPlayer = universe.getCellPosition(getXposition(), getYposition());
+            }else{
+                cellNearbyPlayer = universe.getCellPosition(getXposition() - 1, getYposition());
+            }
+            if (!cellNearbyPlayer.getCollide()){
+                if (ran(rng) == 3){
+                    MoveLeft();
+                    rewardData.x = getXposition() - 1;
+                    if (getXposition() - 1 == -1) rewardData.x = getXposition(); 
+                    rewardData.y = getYposition();
+                    rewardData.reward = -0.01;
+                    rewardData.done = false;
+                    std::cout << "Move left" << std::endl;
+                    std::cout << "x: " << rewardData.x << std::endl;
+                    std::cout << "y: " << rewardData.y << std::endl;
+                    std::cout << "reward: " << rewardData.reward << std::endl;
+                    return rewardData; 
+                }
+            }
+
+            //std::cout << "x :" << rewardData.x << std::endl;
+            //std::cout << "y :" << rewardData.y << std::endl;
+            //std::cout << "reward :" << rewardData.reward << std::endl;
+                                std::cout << "stay" << std::endl;
+                    std::cout << "x: " << rewardData.x << std::endl;
+                    std::cout << "y: " << rewardData.y << std::endl;
+                    std::cout << "reward: " << rewardData.reward << std::endl;
+            rewardData.x = getXposition();
+            rewardData.y = getYposition();
+            rewardData.reward = -0.01;
+            rewardData.done = false;
+            return rewardData; 
+        }
+        State Reset(){
+            State startPosition;
+            startPosition.x = 0;
+            startPosition.y = 0;
+            setPosition(0, 0);
+            return startPosition; 
         }
         void Render(){
             if (ren == NULL) std::cout << "ren agent null" << std::endl;

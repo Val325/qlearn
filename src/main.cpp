@@ -9,10 +9,12 @@
 #include <stdio.h>
 #include <bits/stdc++.h>
 
+#include "include/headers.hpp"
 #include "image.cpp"
 #include "world.cpp"
 #include "agent.cpp"
 #include "qlearn.cpp"
+
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
 
@@ -60,7 +62,8 @@ int main(void)
     agentAI player(0,0);
     agentAI endpoint(0,0);
     world.SetCellSize(sizeCell);
-    qlearning dataLearn(world, player);
+
+    //qlearning dataLearn(world, player);
 	SDL_Surface* cellopen = SDL_LoadBMP("resource/images/cellopen.bmp");
 	if (cellopen == NULL) {
 		fprintf(stderr, "SDL_LoadBMP Error: %s\n", SDL_GetError());
@@ -90,34 +93,42 @@ int main(void)
     //Event handler
     SDL_Event e;
     world.GenerateCells(xLenghtCells, yLenghtCells);
+   
     //game loop
     while( !quit ){
 
         SDL_RenderClear(ren);
-
+        
         if (!isStartGame){
             player.setPosition(0, 0);
         }
+        
+            
         player.setConstraint(xLenghtCells, yLenghtCells);
         player.setWindow(win);
         player.setRender(ren);
         player.loadTexture("resource/images/cellhero.bmp");
         player.setSize(sizeCell,sizeCell);
-        
+        player.setGoal(700, 700);
+
         endpoint.setPosition(700, 500);
         endpoint.setConstraint(xLenghtCells, yLenghtCells);
         endpoint.setWindow(win);
         endpoint.setRender(ren);
         endpoint.loadTexture("resource/images/celldestination.bmp");
         endpoint.setSize(sizeCell,sizeCell);   
+        qlearning qlear(&world, &player, xLenghtCells, yLenghtCells);
         
         if (player.checkCollision(endpoint.getPosition())){
-            std::cout << "get goal" << std::endl;
+            player.GetGoal();
+            //std::cout << "get goal" << std::endl;
+        }else{
+            if (isStartQlearning){
+                player.RandomDirectionMove(world);
+            }
         }
 
-        if (isStartQlearning){
-            player.RandomDirectionMove(world);
-        }
+
         std::vector<ImageCell> CellsAll = world.getCells();
         ImageCell cellInsidePlayer;
         ImageCell cellNearbyPlayer;
@@ -205,6 +216,7 @@ int main(void)
                             }
                             break;
                         case SDLK_r:
+                            qlear.Train();
                             world.GenerateCells(xLenghtCells, yLenghtCells);
                             break;
                         case SDLK_SPACE:

@@ -298,6 +298,7 @@ CMakeFiles/qlearn.dir/src/main.cpp.o
  /home/ghost/progects/sdlqlearn/clearn/inc/SDL/close_code.h
  /home/ghost/progects/sdlqlearn/clearn/src/agent.cpp
  /home/ghost/progects/sdlqlearn/clearn/src/image.cpp
+ /home/ghost/progects/sdlqlearn/clearn/src/include/headers.hpp
  /home/ghost/progects/sdlqlearn/clearn/src/qlearn.cpp
  /home/ghost/progects/sdlqlearn/clearn/src/world.cpp
  /usr/include/alloca.h

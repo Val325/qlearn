@@ -61,6 +61,9 @@ class Enviroment{
             return Cells[num]; 
         }
         ImageCell getCellPosition(int numGridX, int numGridY){
+            //std::cout << "num X: " << numGridX << std::endl;
+            //std::cout << "num Y: " << numGridY << std::endl; 
+
             for (int i = 0; i < sizeCells; i++){
                 if (Cells[i].GetPositionGridX() == numGridX && 
                     Cells[i].GetPositionGridY() == numGridY){
