@@ -123,6 +123,17 @@ class agentAI{
                 AgentRect.x = x * moveSizeCell;
             }
         }
+        void DontMove(){
+            AgentRect.x = AgentRect.x;
+            AgentRect.y = AgentRect.y;
+        }
+        void MovePlayer(int act){
+            if (act == 0) MoveUp();
+            if (act == 1) MoveDown();
+            if (act == 2) MoveRight();
+            if (act == 3) MoveLeft();
+            if (act == 4) DontMove();
+        }
         void RandomDirectionMove(Enviroment universe){
             ImageCell cellNearbyPlayer;
             std::random_device dev;
@@ -224,6 +235,7 @@ class agentAI{
                     return 3; 
                 }
             }
+            return 4;
         }
         Reward GetRewardRandomDirectionMove(Enviroment universe){
             ImageCell cellNearbyPlayer;
@@ -244,11 +256,9 @@ class agentAI{
                     rewardData.y = getYposition() - 1;
                     if (getYposition() - 1 == -1) rewardData.y = getYposition();
                     rewardData.reward = -0.01;
+                    rewardData.action = 0;
                     rewardData.done = false;
-                    std::cout << "Move up" << std::endl;
-                    std::cout << "x: " << rewardData.x << std::endl;
-                    std::cout << "y: " << rewardData.y << std::endl;
-                    std::cout << "reward: " << rewardData.reward << std::endl;
+
                     return rewardData; 
                 }
             }
@@ -264,11 +274,9 @@ class agentAI{
                     rewardData.x = getXposition();
                     rewardData.y = getYposition() + 1;
                     rewardData.reward = -0.01;
+                    rewardData.action = 1;
                     rewardData.done = false;
-                    std::cout << "Move down" << std::endl;
-                    std::cout << "x: " << rewardData.x << std::endl;
-                    std::cout << "y: " << rewardData.y << std::endl;
-                    std::cout << "reward: " << rewardData.reward << std::endl;
+
                     return rewardData; 
                 }
             }
@@ -284,11 +292,9 @@ class agentAI{
                     rewardData.x = getXposition() + 1;
                     rewardData.y = getYposition();
                     rewardData.reward = -0.01;
+                    rewardData.action = 2;
                     rewardData.done = false;
-                    std::cout << "Move right" << std::endl;
-                    std::cout << "x: " << rewardData.x << std::endl;
-                    std::cout << "y: " << rewardData.y << std::endl;
-                    std::cout << "reward: " << rewardData.reward << std::endl;
+
                     return rewardData; 
                 }
             }
@@ -306,12 +312,10 @@ class agentAI{
                     rewardData.x = getXposition() - 1;
                     if (getXposition() - 1 == -1) rewardData.x = getXposition(); 
                     rewardData.y = getYposition();
+                    rewardData.action = 3;
                     rewardData.reward = -0.01;
                     rewardData.done = false;
-                    std::cout << "Move left" << std::endl;
-                    std::cout << "x: " << rewardData.x << std::endl;
-                    std::cout << "y: " << rewardData.y << std::endl;
-                    std::cout << "reward: " << rewardData.reward << std::endl;
+
                     return rewardData; 
                 }
             }
@@ -319,13 +323,11 @@ class agentAI{
             //std::cout << "x :" << rewardData.x << std::endl;
             //std::cout << "y :" << rewardData.y << std::endl;
             //std::cout << "reward :" << rewardData.reward << std::endl;
-                                std::cout << "stay" << std::endl;
-                    std::cout << "x: " << rewardData.x << std::endl;
-                    std::cout << "y: " << rewardData.y << std::endl;
-                    std::cout << "reward: " << rewardData.reward << std::endl;
+
             rewardData.x = getXposition();
             rewardData.y = getYposition();
             rewardData.reward = -0.01;
+            rewardData.action = 4;
             rewardData.done = false;
             return rewardData; 
         }

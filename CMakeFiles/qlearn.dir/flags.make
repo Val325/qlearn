@@ -6,5 +6,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = -I/home/ghost/progects/sdlqlearn/clearn/inc
 
-CXX_FLAGS =  -Wl,-rpath lib -lSDL2_ttf -lSDL2_mixer -L lib -std=gnu++14
+CXX_FLAGS =  -Wl,-rpath lib -lSDL2_ttf -lSDL2_mixer -L lib -fsanitize=address -std=gnu++14
 

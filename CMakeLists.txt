@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 14)
 
 set(Libs ${PROJECT_SOURCE_DIR}/lib)
 message("path: ${PROJECT_SOURCE_DIR}/lib")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-rpath lib -lSDL2_ttf -lSDL2_mixer -L lib")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-rpath lib -lSDL2_ttf -lSDL2_mixer -L lib -fsanitize=address")
 
 include_directories(${PROJECT_SOURCE_DIR}/inc)
 find_library(SDL2 NAMES SDL2 PATHS ${PROJECT_SOURCE_DIR}/lib)

@@ -8,6 +8,8 @@
 #include <SDL/SDL_ttf.h>
 #include <stdio.h>
 #include <bits/stdc++.h>
+#include <algorithm>
+#include <thread>
 
 #include "include/headers.hpp"
 #include "image.cpp"
@@ -93,6 +95,7 @@ int main(void)
     //Event handler
     SDL_Event e;
     world.GenerateCells(xLenghtCells, yLenghtCells);
+    
    
     //game loop
     while( !quit ){
@@ -101,9 +104,12 @@ int main(void)
         
         if (!isStartGame){
             player.setPosition(0, 0);
-        }
-        
             
+        }
+       qlearning qlear(&world, &player, xLenghtCells, yLenghtCells); 
+        
+
+
         player.setConstraint(xLenghtCells, yLenghtCells);
         player.setWindow(win);
         player.setRender(ren);
@@ -117,25 +123,28 @@ int main(void)
         endpoint.setRender(ren);
         endpoint.loadTexture("resource/images/celldestination.bmp");
         endpoint.setSize(sizeCell,sizeCell);   
-        qlearning qlear(&world, &player, xLenghtCells, yLenghtCells);
         
         if (player.checkCollision(endpoint.getPosition())){
             player.GetGoal();
             //std::cout << "get goal" << std::endl;
-        }else{
-            if (isStartQlearning){
-                player.RandomDirectionMove(world);
-            }
         }
+        //else{
+            //if (isStartQlearning){
+                //player.RandomDirectionMove(world);
+            //}
+        //}
 
-
+        player.MovePlayer(qlear.getAction());
         std::vector<ImageCell> CellsAll = world.getCells();
         ImageCell cellInsidePlayer;
         ImageCell cellNearbyPlayer;
         //SDL_Rect playerRect = player.getPosition();
         world.Render();
         endpoint.Render();
+        //qlear.Render();
+        
         player.Render();
+        //qlear.Train();
         //here SDL_RENDER_COPY
 
         //cellOpen.render();

@@ -1,6 +1,8 @@
 struct Reward{
     int x;
     int y;
+    // -1 - dont move
+    int action;
     float reward;
     bool done;
 };
