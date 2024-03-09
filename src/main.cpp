@@ -10,6 +10,7 @@
 #include <bits/stdc++.h>
 #include <algorithm>
 #include <thread>
+#include <unistd.h>
 
 #include "include/headers.hpp"
 #include "image.cpp"
@@ -19,7 +20,9 @@
 
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
+void sdlEvents(){
 
+}
 int main(void)
 {
     srand(time(NULL));
@@ -129,22 +132,23 @@ int main(void)
             //std::cout << "get goal" << std::endl;
         }
         //else{
-            //if (isStartQlearning){
-                //player.RandomDirectionMove(world);
-            //}
+        if (isStartQlearning){
+            //player.RandomDirectionMove(world);
+            //qlear.Render(); 
+        }
         //}
-
-        player.MovePlayer(qlear.getAction());
+        //std::cout << "action: " << qlear.getAction() << std::endl; 
+        qlear.Train();
         std::vector<ImageCell> CellsAll = world.getCells();
         ImageCell cellInsidePlayer;
         ImageCell cellNearbyPlayer;
         //SDL_Rect playerRect = player.getPosition();
-        world.Render();
-        endpoint.Render();
-        //qlear.Render();
+        //world.Render();
         
-        player.Render();
-        //qlear.Train();
+        qlear.Render();
+        endpoint.Render(); 
+        //player.Render();
+        //qlear.Init();
         //here SDL_RENDER_COPY
 
         //cellOpen.render();

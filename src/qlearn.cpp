@@ -4,6 +4,12 @@ class qlearning{
     private:
         Enviroment *env;
         agentAI *agentPlayer;
+        int xSizeCells;
+        int ySizeCells;
+        bool quit = false;
+        bool isStartGame = false;
+        bool isGame = false;
+        bool isStartQlearning = false;
         float alpha; //learning rate
         float gamma; //discount factor
         float epsilon; //exploration rate
@@ -13,18 +19,25 @@ class qlearning{
         std::vector<std::vector<std::vector<float>>> qTable;
         Reward rewardAgent;
         State startpos;
+        SDL_Event e;
     public:
         qlearning(Enviroment *envQlearn, agentAI *agentQlearn, int xSize, int ySize): env(){
+
             env = envQlearn;
             agentPlayer = agentQlearn; 
+            xSizeCells = xSize; 
+            ySizeCells = ySize;
             alpha = 0.5;
             gamma = 0.95;
-            epsilon = 0.1;
+            epsilon = 0.5;
             episodes = 10;
             //qTable.push_back({ { 1.3, 2.6, 3.1, 4.4 }, { 3.7, 2.8, 1.3, 2.4 } });
             //qTable.push_back({ { 1.2, 2.4, 3.2, 4.5 }, { 1.6, 2.8, 3.2, 4.4 } });
             startpos = agentPlayer->Reset(); 
-            
+            quit = false;
+            isStartGame = false;
+            isGame = false;
+            isStartQlearning = false; 
             qTable.resize(xSize);
             //std::cout << "Xsize: " <<  xSize << std::endl;
             //std::cout << "Ysize: " <<  ySize << std::endl; 
@@ -81,7 +94,7 @@ class qlearning{
         }
         void UpdateQtable(int xqtable, int yqtable, int action, float reward, int xnew, int ynew){
             //std::cout << "qtable new: " << qTable[xnew][ynew] << std::endl;
-
+            /*
             std::cout << "-- DATA --" << std::endl;
             std::cout << "xqtable: " << xqtable << std::endl;
             std::cout << "yqtable: " << yqtable << std::endl;
@@ -94,23 +107,25 @@ class qlearning{
             std::cout << "xqtable: " << xqtable << std::endl;
             std::cout << "xqtable size: " << qTable.size() << std::endl;
             std::cout << "yqtable : " << yqtable << std::endl;
+            */
             //std::cout << "yqtable size: " << qTable[xqtable].size() << std::endl;
             //std::cout << "Find max: " << FindMax(qTable[xqtable][yqtable]) << std::endl;
             std::cout << "action: " << action << std::endl;
             //std::cout << "action size: " << qTable[xqtable][yqtable].size() << std::endl;
             //std::cout << "qtable action: " << qTable[xqtable][yqtable][action] << std::endl;
-            MovePlayer(action);
+            
             if (yqtable == 6){
                 qTable[xqtable][yqtable - 1][action] = (1.0 - alpha) * qTable[xqtable][yqtable - 1][action] + alpha * (reward + gamma * FindMax(qTable[xqtable][yqtable - 1]));
-                std::cout << "qtable: " << qTable[xqtable][yqtable - 1][action] << std::endl; 
+
+                //std::cout << "qtable: " << qTable[xqtable][yqtable - 1][action] << std::endl; 
             } else if (xqtable == 8){
                 qTable[xqtable - 1][yqtable][action] = (1.0 - alpha) * qTable[xqtable - 1][yqtable][action] + alpha * (reward + gamma * FindMax(qTable[xqtable -1][yqtable]));
-                std::cout << "qtable: " << qTable[xqtable - 1][yqtable][action] << std::endl; 
+                //std::cout << "qtable: " << qTable[xqtable - 1][yqtable][action] << std::endl; 
 
             }else{
                 qTable[xqtable][yqtable][action] = (1.0 - alpha) * qTable[xqtable][yqtable][action] + alpha * (reward + gamma * FindMax(qTable[xqtable][yqtable]));
-                
-                std::cout << "qtable: " << qTable[xqtable][yqtable][action] << std::endl; 
+
+                //std::cout << "qtable: " << qTable[xqtable][yqtable][action] << std::endl; 
             }
 
 
@@ -135,24 +150,28 @@ class qlearning{
             if (act == 3) agentPlayer->MoveLeft();
 
         }
+
         void Init(){
             //std::thread t1(&qlearning::Render, this);
             //std::thread t2(&qlearning::Train, this);
+            //std::thread t3(&qlearning::sdlEvents, this);         
             //t1.join();
             //t2.join();
+            //t3.join();
             //Train();
             //Render();
         }
         void Render(){
             env->Render();
             //endpoint.Render();
-            agentPlayer->setPosition(rewardAgent.x, rewardAgent.y);
+            //agentPlayer->setPosition(rewardAgent.x, rewardAgent.y);
             agentPlayer->Render();
             
         }
         int getAction(){
             return rewardAgent.action; 
         }
+
         void Train(){
             std::vector<float> rewards;
             std::vector<State> states;
@@ -161,19 +180,17 @@ class qlearning{
             
             int steps = 0;
             int episode = 0;
-
-            while (episode < episodes){
-                
-                float totalReward = 0.0;
-                bool isDone = false;
-                while (!isDone){
-                    //int act = ChooseAction(startpos.x, startpos.y);
+            float totalReward = 0.0;
+            bool isDone = false; 
+                    int act = ChooseAction(startpos.x, startpos.y);
 
                     rewardAgent = agentPlayer->GetRewardRandomDirectionMove(*env);
 
+                    //std::cout << "action: " << getAction() << std::endl; 
+                    //MovePlayer(rewardAgent.action); 
+                    //agentPlayer->MovePlayer();
+                    UpdateQtable(startpos.x, startpos.y, act, rewardAgent.reward, rewardAgent.x, rewardAgent.y); 
                     
-                    //MovePlayer(rewardAgent.action);  
-                    UpdateQtable(startpos.x, startpos.y, rewardAgent.action, rewardAgent.reward, rewardAgent.x, rewardAgent.y);
 
                     isDone = rewardAgent.done;
                     startpos.x = rewardAgent.x;
@@ -188,7 +205,13 @@ class qlearning{
                         steps = 0;
                         episode++;
                     }
+            /*
+            while (episode < episodes){
+                
+
+                while (!isDone){
+
                 }
-            }
+            }*/
         }
 };
